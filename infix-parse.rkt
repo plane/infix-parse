@@ -89,7 +89,7 @@
     [(_         unary-op:op-not       r ...+) #'( unary-op                     (infix-parse r ...))]
     [(_ l ...+ binary-op:op-equal     r ...+) #'(binary-op (infix-parse l ...) (infix-parse r ...))]
     [(_ l ...+ op1:op-inequality m ...+
-              (op2:op-inequality r ...+) ...)      (parse-inequality stx)]
+              (op2:op-inequality r ...+) ...)   (parse-inequality stx)]
     [(_ l ...+ binary-op:op-add-sub   r ...+) #'(binary-op (infix-parse l ...) (infix-parse r ...))]
     [(_ l ...+ binary-op:op-mul-div   r ...+) #'(binary-op (infix-parse l ...) (infix-parse r ...))]
     [(_ f xs ...+)                            #'(f xs ...)]
