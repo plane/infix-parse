@@ -6,7 +6,7 @@
          (only-in racket/list rest)
          (for-syntax racket/base
                      syntax/parse/class/paren-shape
-                     "define-operator-classes.rkt"))
+                     "util/define-operator-classes.rkt"))
 
 (begin-for-syntax
   (define-operator-classes
@@ -114,4 +114,3 @@
    (infix-parse 0 < 2 <= 2) #t
    (infix-parse 0 < 1 + 2 < 3) #f
    (infix-parse 0 < 1 + 2 <= 3) #t))
-
