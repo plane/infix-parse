@@ -40,18 +40,14 @@
                 (infix-parse rhs ...))]
     
   [(_ lhs:not-op-inequality ...+
-      (~seq op:op-inequality
-            rhs:not-op-inequality ...+) ...+)
+      (~seq op:op-inequality rhs:not-op-inequality ...+) ...+)
    #:with (ops ...) #'(op ...)
-   #:with (tmp ...) (generate-temporaries
-                     #'((lhs ...) (rhs ...) ...))
-   #'(let*-values
-         ([(tmp ...) (values (infix-parse lhs ...)
-                             (infix-parse rhs ...) ...)]
-          [(tmps)    (list tmp ...)])
-       (for/and ([lhs* (in-list tmps)]
-                 [rhs* (in-list (rest tmps))]
-                 [op*  (in-list (list ops ...))])
+   #'(let* ([lhs-list (list (infix-parse lhs ...) (infix-parse rhs ...) ...)]
+            [rhs-list (rest lhs-list)]
+            [ops-list (list ops ...)])
+       (for/and ([lhs* (in-list lhs-list)]
+                 [rhs* (in-list rhs-list)]
+                 [op*  (in-list ops-list)])
          (op* lhs* rhs*)))]
     
   [(_ lhs ...+ binary-op:op-add-sub rhs ...+)
