@@ -5,11 +5,10 @@
 (require syntax/parse/define
          (only-in racket/list rest)
          (for-syntax racket/base
-                     syntax/parse/class/paren-shape))
+                     syntax/parse/class/paren-shape
+                     "define-operator-classes.rkt"))
 
 (begin-for-syntax
-  (require "define-operator-classes.rkt")
-  
   (define-operator-classes
     op-not        (not)
     op-and        (and)
