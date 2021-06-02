@@ -116,4 +116,3 @@
    (infix-parse 0 < 1 + 2 < 3) #f
    (infix-parse 0 < 1 + 2 <= 3) #t))
 
-  
