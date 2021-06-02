@@ -94,3 +94,48 @@
     [(_ l ...+ binary-op:op-mul-div   r ...+) #'(binary-op (infix-parse l ...) (infix-parse r ...))]
     [(_ f xs ...+)                            #'(f xs ...)]
     [(_ x)                                    #'x]))
+
+(module+ test
+  (require rackunit/chk)
+  (chk
+   (infix-parse 1) 1
+   (infix-parse 1 + 2) 3
+   (infix-parse 1 + 2 * 3) 7
+   (infix-parse (1 + 2) * 3) 9
+   (infix-parse 3 - 2 - 1) 0
+   (infix-parse 3 - (2 - 1)) 2
+   (infix-parse 2 / 3) 2/3
+   (infix-parse 1 + 2 / 3) 5/3
+   (infix-parse (1 + 2) / 3) 1
+   (infix-parse 5 quotient 3) 1
+   (infix-parse 5 remainder 3) 2
+   (infix-parse 5 quotient/remainder 3) (values 1 2)
+   (infix-parse 'a) 'a
+   (infix-parse 'a equal? 'b) #f
+   (infix-parse 'a eqv? 'a) #t
+   (infix-parse 3 - 2 = 1) #t
+   (infix-parse 1 = 3 - 2) #t
+   (infix-parse #f) #f
+   (infix-parse not #f) #t
+   (infix-parse not not #f) #f
+   (infix-parse #t or #f) #t
+   (infix-parse #f or #f) #f
+   (infix-parse #t and #f) #f
+   (infix-parse #t and #t) #t
+   (infix-parse #t or #f and #f) #t
+   (infix-parse #t and #t or #f) #t
+   (infix-parse #t and #t or #f) #t
+   (infix-parse not #f and #t) #t
+   (infix-parse not not #f and #t) #f
+   (infix-parse not #f or #f) #t
+   (infix-parse not #f or not #f) #t
+   (infix-parse #f and 1 / 0 > 2) #f
+   (infix-parse 1 < 2) #t
+   (infix-parse 1 > 2) #f
+   (infix-parse 1 < 2 < 3) #t
+   (infix-parse 1 > 2 > 3) #f
+   (infix-parse 0 < 1 < 2) #t
+   (infix-parse 0 < 2 < 2) #f
+   (infix-parse 0 < 2 <= 2) #t
+   (infix-parse 0 < 1 + 2 < 3) #f
+   (infix-parse 0 < 1 + 2 <= 3) #t))
