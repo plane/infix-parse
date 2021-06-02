@@ -41,10 +41,9 @@
     
   [(_ lhs:not-op-inequality ...+
       (~seq op:op-inequality rhs:not-op-inequality ...+) ...+)
-   #:with (ops ...) #'(op ...)
    #'(let* ([lhs-list (list (infix-parse lhs ...) (infix-parse rhs ...) ...)]
             [rhs-list (rest lhs-list)]
-            [ops-list (list ops ...)])
+            [ops-list (list op ...)])
        (for/and ([lhs* (in-list lhs-list)]
                  [rhs* (in-list rhs-list)]
                  [op*  (in-list ops-list)])
