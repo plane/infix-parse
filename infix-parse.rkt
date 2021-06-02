@@ -2,11 +2,10 @@
 
 (provide infix-parse)
 
-(require
-  (only-in racket/list rest)
-  (for-syntax racket/base              
-              syntax/parse
-              syntax/parse/class/paren-shape))
+(require syntax/parse/define
+         (only-in racket/list rest)
+         (for-syntax racket/base
+                     syntax/parse/class/paren-shape))
 
 (begin-for-syntax
   (require "define-operator-classes.rkt")
@@ -20,56 +19,55 @@
     op-equal      (eq? eqv? equal? = not-eq? not-eqv? not-equal? !=)
     op-inequality (< <= > >=)))
 
-(define-syntax (infix-parse stx)
-  (syntax-parse stx
-    #:track-literals
+(define-syntax-parser infix-parse
+  #:track-literals
     
-    [(_ (~parens e e0 ...+))
-     #'(infix-parse e e0 ...)]
+  [(_ (~parens e e0 ...+))
+   #'(infix-parse e e0 ...)]
     
-    [(_ lhs ...+ binary-op:op-or rhs ...+)
-     #'(binary-op (infix-parse lhs ...)
-                  (infix-parse rhs ...))]
+  [(_ lhs ...+ binary-op:op-or rhs ...+)
+   #'(binary-op (infix-parse lhs ...)
+                (infix-parse rhs ...))]
     
-    [(_ lhs ...+ binary-op:op-and rhs ...+)
-     #'(binary-op (infix-parse lhs ...)
-                  (infix-parse rhs ...))]
+  [(_ lhs ...+ binary-op:op-and rhs ...+)
+   #'(binary-op (infix-parse lhs ...)
+                (infix-parse rhs ...))]
     
-    [(_ unary-op:op-not rhs ...+)
-     #'(unary-op (infix-parse rhs ...))]
+  [(_ unary-op:op-not rhs ...+)
+   #'(unary-op (infix-parse rhs ...))]
     
-    [(_ lhs ...+ binary-op:op-equal rhs ...+)
-     #'(binary-op (infix-parse lhs ...)
-                  (infix-parse rhs ...))]
+  [(_ lhs ...+ binary-op:op-equal rhs ...+)
+   #'(binary-op (infix-parse lhs ...)
+                (infix-parse rhs ...))]
     
-    [(_ lhs:not-op-inequality ...+
-        (~seq op:op-inequality
-              rhs:not-op-inequality ...+) ...+)
-     #:with (ops ...) #'(op ...)
-     #:with (tmp ...) (generate-temporaries
-                       #'((lhs ...) (rhs ...) ...))
-     #'(let*-values
-           ([(tmp ...) (values (infix-parse lhs ...)
-                               (infix-parse rhs ...) ...)]
-            [(tmps)    (list tmp ...)])
-         (for/and ([lhs* (in-list tmps)]
-                   [rhs* (in-list (rest tmps))]
-                   [op*  (in-list (list ops ...))])
-           (op* lhs* rhs*)))]
+  [(_ lhs:not-op-inequality ...+
+      (~seq op:op-inequality
+            rhs:not-op-inequality ...+) ...+)
+   #:with (ops ...) #'(op ...)
+   #:with (tmp ...) (generate-temporaries
+                     #'((lhs ...) (rhs ...) ...))
+   #'(let*-values
+         ([(tmp ...) (values (infix-parse lhs ...)
+                             (infix-parse rhs ...) ...)]
+          [(tmps)    (list tmp ...)])
+       (for/and ([lhs* (in-list tmps)]
+                 [rhs* (in-list (rest tmps))]
+                 [op*  (in-list (list ops ...))])
+         (op* lhs* rhs*)))]
     
-    [(_ lhs ...+ binary-op:op-add-sub rhs ...+)
-     #'(binary-op (infix-parse lhs ...)
-                  (infix-parse rhs ...))]
+  [(_ lhs ...+ binary-op:op-add-sub rhs ...+)
+   #'(binary-op (infix-parse lhs ...)
+                (infix-parse rhs ...))]
     
-    [(_ lhs ...+ binary-op:op-mul-div rhs ...+)
-     #'(binary-op (infix-parse lhs ...)
-                  (infix-parse rhs ...))]
+  [(_ lhs ...+ binary-op:op-mul-div rhs ...+)
+   #'(binary-op (infix-parse lhs ...)
+                (infix-parse rhs ...))]
     
-    [(_ f xs ...+)
-     #'(f xs ...)]
+  [(_ f xs ...+)
+   #'(f xs ...)]
     
-    [(_ x)
-     #'x]))
+  [(_ x)
+   #'x])
 
 (module+ test
   (require rackunit/chk)
