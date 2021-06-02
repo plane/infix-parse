@@ -10,14 +10,14 @@
 
 (begin-for-syntax
   (define-operator-classes
-    op-not        (not)
-    op-and        (and)
     op-or         (or)
-    op-add-sub    (+ -)
-    op-mul-div    (* / modulo quotient remainder quotient/remainder)
+    op-and        (and)
+    op-not        (not)
     op-equal      (eq? eqv? equal? = not-eq? not-eqv? not-equal? !=)
-    op-inequality (< <= > >=)))
-
+    op-inequality (< <= > >=)
+    op-add-sub    (+ -)
+    op-mul-div    (* / modulo quotient remainder quotient/remainder)))
+    
 (define-syntax-parser infix-parse
   #:track-literals
     
