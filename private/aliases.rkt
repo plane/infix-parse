@@ -10,3 +10,8 @@
 (define not-equal? (compose not equal?))
 (define !=         (compose not =))
 
+(provide //
+         %)  
+
+(define // quotient)
+(define % remainder)

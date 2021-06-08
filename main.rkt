@@ -1,5 +1,5 @@
 #lang reprovide
 
 "private/infix-parse.rkt"
-"private/negations.rkt"
+"private/aliases.rkt"
 
