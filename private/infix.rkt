@@ -6,7 +6,10 @@
          (only-in racket/list rest)
          (for-syntax racket/base
                      syntax/parse/class/paren-shape
-                     "util/define-operator-classes.rkt"))
+                     "util/define-operator-classes.rkt")
+         "aliases/division.rkt"
+         "aliases/expt.rkt"
+         "aliases/not-equal.rkt")
 
 (begin-for-syntax
   (define-operator-classes
@@ -16,7 +19,8 @@
     op-equal      (eq? eqv? equal? = not-eq? not-eqv? not-equal? !=)
     op-inequality (< <= > >=)
     op-add-sub    (+ -)
-    op-mul-div    (* / modulo quotient remainder // % quotient/remainder)))
+    op-mul-div    (* / modulo quotient remainder // % quotient/remainder)
+    op-expt       (^ expt)))
     
 (define-syntax-parser infix:
   #:track-literals
@@ -57,6 +61,10 @@
    #'(binary-op (infix: lhs ...)
                 (infix: rhs ...))]
     
+  [(_ lhs ...+ binary-op:op-expt rhs ...+)
+   #'(binary-op (infix: lhs ...)
+                (infix: rhs ...))]
+    
   [(_ f xs ...+)
    #'(f xs ...)]
     
@@ -78,6 +86,9 @@
    (infix: 5 quotient 3) 1
    (infix: 5 remainder 3) 2
    (infix: 5 quotient/remainder 3) (values 1 2)
+   (infix: 5 // 3) 1
+   (infix: 5 % 3) 2
+   (infix: 2 * 3 ^ 2) 18
    (infix: 'a) 'a
    (infix: 'a equal? 'b) #f
    (infix: 'a eqv? 'a) #t
