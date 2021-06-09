@@ -38,10 +38,16 @@
     
   [(_ unary-op:op-not rhs ...+)
    #'(unary-op (infix: rhs ...))]
-    
-  [(_ lhs ...+ binary-op:op-equal rhs ...+)
-   #'(binary-op (infix: lhs ...)
-                (infix: rhs ...))]
+  
+  [(_ lhs:not-op-equal ...+
+      (~seq op:op-equal rhs:not-op-equal ...+) ...+)
+   #'(let* ([lhs-list (list (infix: lhs ...) (infix: rhs ...) ...)]
+            [rhs-list (rest lhs-list)]
+            [ops-list (list op ...)])
+       (for/and ([lhs* (in-list lhs-list)]
+                 [rhs* (in-list rhs-list)]
+                 [op*  (in-list ops-list)])
+         (op* lhs* rhs*)))]
     
   [(_ lhs:not-op-inequality ...+
       (~seq op:op-inequality rhs:not-op-inequality ...+) ...+)
