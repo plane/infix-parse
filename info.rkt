@@ -2,7 +2,7 @@
 
 (define collection "infix-parse")
 (define pkg-authors '("crystal@panix.com"))
-(define version "0.1")
+(define version "0.2")
 (define scribblings
  '(("infix-parse.scrbl" () (library) "infix-parse")))
 (define pkg-desc "Infix expression parsing")
