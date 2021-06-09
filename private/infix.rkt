@@ -2,8 +2,7 @@
 
 (provide infix:)
 
-(require syntax/parse/define
-         "util/define-infix-parser.rkt"
+(require "define.rkt"
          "aliases/division.rkt"
          "aliases/expt.rkt"
          "aliases/not-equal.rkt")
