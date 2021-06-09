@@ -3,79 +3,39 @@
 (provide infix:)
 
 (require syntax/parse/define
-         (only-in racket/list rest)
-         (for-syntax racket/base
-                     syntax/parse/class/paren-shape
-                     "util/define-operator-classes.rkt")
          "aliases/division.rkt"
          "aliases/expt.rkt"
          "aliases/not-equal.rkt")
 
+(require
+  (for-syntax racket/base
+              syntax/parse/class/paren-shape
+              "util/define-operator-classes.rkt"))
+
 (begin-for-syntax
-  (define-operator-classes
-    op-or         (or)
-    op-and        (and)
-    op-not        (not)
-    op-equal      (eq? eqv? equal? = not-eq? not-eqv? not-equal? !=)
-    op-inequality (< <= > >=)
-    op-add-sub    (+ -)
-    op-mul-div    (* / modulo quotient remainder // % quotient/remainder)
-    op-expt       (^ expt)))
-    
+  (define-operator-classes infix:
+     binary    op-or         (or)
+     binary    op-and        (and)
+     unary     op-not        (not)
+     variadic  op-equal      (eq? eqv? equal? = not-eq? not-eqv? not-equal? !=)
+     variadic  op-inequality (< <= > >=)
+     binary    op-add-sub    (+ -)
+     binary    op-mul-div    (* / modulo quotient remainder // % quotient/remainder)
+     binary    op-expt       (^ expt)))
+
 (define-syntax-parser infix:
   #:track-literals
-    
-  [(_ (~parens e e0 ...+))
-   #'(infix: e e0 ...)]
-    
-  [(_ lhs ...+ binary-op:op-or rhs ...+)
-   #'(binary-op (infix: lhs ...)
-                (infix: rhs ...))]
-    
-  [(_ lhs ...+ binary-op:op-and rhs ...+)
-   #'(binary-op (infix: lhs ...)
-                (infix: rhs ...))]
-    
-  [(_ unary-op:op-not rhs ...+)
-   #'(unary-op (infix: rhs ...))]
-  
-  [(_ lhs:not-op-equal ...+
-      (~seq op:op-equal rhs:not-op-equal ...+) ...+)
-   #'(let* ([lhs-list (list (infix: lhs ...) (infix: rhs ...) ...)]
-            [rhs-list (rest lhs-list)]
-            [ops-list (list op ...)])
-       (for/and ([lhs* (in-list lhs-list)]
-                 [rhs* (in-list rhs-list)]
-                 [op*  (in-list ops-list)])
-         (op* lhs* rhs*)))]
-    
-  [(_ lhs:not-op-inequality ...+
-      (~seq op:op-inequality rhs:not-op-inequality ...+) ...+)
-   #'(let* ([lhs-list (list (infix: lhs ...) (infix: rhs ...) ...)]
-            [rhs-list (rest lhs-list)]
-            [ops-list (list op ...)])
-       (for/and ([lhs* (in-list lhs-list)]
-                 [rhs* (in-list rhs-list)]
-                 [op*  (in-list ops-list)])
-         (op* lhs* rhs*)))]
-    
-  [(_ lhs ...+ binary-op:op-add-sub rhs ...+)
-   #'(binary-op (infix: lhs ...)
-                (infix: rhs ...))]
-    
-  [(_ lhs ...+ binary-op:op-mul-div rhs ...+)
-   #'(binary-op (infix: lhs ...)
-                (infix: rhs ...))]
-    
-  [(_ lhs ...+ binary-op:op-expt rhs ...+)
-   #'(binary-op (infix: lhs ...)
-                (infix: rhs ...))]
-    
-  [(_ f xs ...+)
-   #'(f xs ...)]
-    
-  [(_ x)
-   #'x])
+  [(_ (~parens e e0 ...+))   #'(infix: e e0 ...)]
+  [(_ op:op-or-expr)         #'op.result]
+  [(_ op:op-and-expr)        #'op.result]
+  [(_ op:op-not-expr)        #'op.result]
+  [(_ op:op-equal-expr)      #'op.result]
+  [(_ op:op-inequality-expr) #'op.result]
+  [(_ op:op-add-sub-expr)    #'op.result]
+  [(_ op:op-mul-div-expr)    #'op.result]
+  [(_ op:op-expt-expr)       #'op.result]    
+  [(_ f xs ...+)             #'(f xs ...)]
+  [(_ x)                     #'x])
 
 (module+ test
   (require rackunit/chk)
