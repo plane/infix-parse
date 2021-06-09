@@ -3,14 +3,13 @@
 (provide infix:)
 
 (require syntax/parse/define
+         "util/define-infix-parser.rkt"
          "aliases/division.rkt"
          "aliases/expt.rkt"
          "aliases/not-equal.rkt")
 
 (require
-  (for-syntax racket/base
-              syntax/parse/class/paren-shape
-              "util/define-operator-classes.rkt"))
+  (for-syntax "util/define-operator-classes.rkt"))
 
 (begin-for-syntax
   (define-operator-classes infix:
@@ -23,19 +22,15 @@
      binary    op-mul-div    (* / modulo quotient remainder // % quotient/remainder)
      binary    op-expt       (^ expt)))
 
-(define-syntax-parser infix:
-  #:track-literals
-  [(_ (~parens e e0 ...+))   #'(infix: e e0 ...)]
-  [(_ op:op-or-expr)         #'op.result]
-  [(_ op:op-and-expr)        #'op.result]
-  [(_ op:op-not-expr)        #'op.result]
-  [(_ op:op-equal-expr)      #'op.result]
-  [(_ op:op-inequality-expr) #'op.result]
-  [(_ op:op-add-sub-expr)    #'op.result]
-  [(_ op:op-mul-div-expr)    #'op.result]
-  [(_ op:op-expt-expr)       #'op.result]    
-  [(_ f xs ...+)             #'(f xs ...)]
-  [(_ x)                     #'x])
+(define-infix-parser infix:
+  #:operator-precedence (op-or
+                         op-and
+                         op-not
+                         op-equal
+                         op-inequality
+                         op-add-sub
+                         op-mul-div
+                         op-expt))
 
 (module+ test
   (require rackunit/chk)

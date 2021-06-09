@@ -5,7 +5,7 @@
 (require syntax/parse
          syntax/parse/define)
 
-(require 
+(require (for-syntax "operator-class-name.rkt")
   (for-syntax racket/base                
               racket/syntax
               syntax/parse
@@ -13,15 +13,9 @@
   (for-template racket/base
                 (only-in racket/list rest)))
 
-(begin-for-syntax
-  (define-syntax-class op-class-name
-    (pattern name:id
-      #:attr expr   (format-id #'name "~a-expr" (syntax-e #'name))
-      #:attr is-not (format-id #'name "not-~a"  (syntax-e #'name)))))
-
 (define-syntax-parser define-unary-operator-class
   #:track-literals
-  [(_ parser:id name:op-class-name literal-id:id ...+)
+  [(_ parser:id name:operator-class-name literal-id:id ...+)
    #'(begin
        (define-syntax-class name
          (pattern (~literal literal-id)) ...)
@@ -32,7 +26,7 @@
 
 (define-syntax-parser define-binary-operator-class
   #:track-literals
-  [(_ parser:id name:op-class-name literal-id:id ...+)
+  [(_ parser:id name:operator-class-name literal-id:id ...+)
    #'(begin
        (define-syntax-class name
          (pattern (~literal literal-id)) ...)
@@ -44,7 +38,7 @@
 
 (define-syntax-parser define-variadic-operator-class
   #:track-literals
-  [(_ parser:id name:op-class-name literal-id:id ...+)
+  [(_ parser:id name:operator-class-name literal-id:id ...+)
    #'(begin
        (define-syntax-class name
          (pattern (~literal literal-id)) ...)
@@ -67,18 +61,18 @@
 (define-syntax-parser define-operator-class
   #:track-literals
   #:datum-literals (unary binary variadic)
-  [(_ parser:id unary name:op-class-name literal-id:id ...+)
+  [(_ parser:id unary name:operator-class-name literal-id:id ...+)
    #'(define-unary-operator-class parser name literal-id ...)]
   
-  [(_ parser:id binary name:op-class-name literal-id:id ...+)
+  [(_ parser:id binary name:operator-class-name literal-id:id ...+)
    #'(define-binary-operator-class parser name literal-id ...)]
   
-  [(_ parser:id variadic name:op-class-name literal-id:id ...+)
+  [(_ parser:id variadic name:operator-class-name literal-id:id ...+)
    #'(define-variadic-operator-class parser name literal-id ...)])
 
 (define-syntax-parser define-operator-classes
   #:track-literals
   #:datum-literals (unary binary variadic)
-  [(_ parser:id (~seq arity name:op-class-name (literal-id:id ...+)) ...+)
+  [(_ parser:id (~seq arity name:operator-class-name (literal-id:id ...+)) ...+)
    #'(begin
        (define-operator-class parser arity name literal-id ...) ...)])
