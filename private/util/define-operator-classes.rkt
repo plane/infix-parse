@@ -7,9 +7,7 @@
 
 (require (for-syntax "operator-class-name.rkt")
   (for-syntax racket/base                
-              racket/syntax
-              syntax/parse
-              syntax/parse/define)
+              syntax/parse)
   (for-template racket/base
                 (only-in racket/list rest)))
 
@@ -73,6 +71,6 @@
 (define-syntax-parser define-operator-classes
   #:track-literals
   #:datum-literals (unary binary variadic)
-  [(_ parser:id (~seq arity name:operator-class-name (literal-id:id ...+)) ...+)
+  [(_ parser:id ((~seq arity name:operator-class-name (literal-id:id ...+))) ...+)
    #'(begin
        (define-operator-class parser arity name literal-id ...) ...)])

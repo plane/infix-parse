@@ -8,11 +8,8 @@
          "aliases/expt.rkt"
          "aliases/not-equal.rkt")
 
-(require
-  (for-syntax "util/define-operator-classes.rkt"))
-
-(begin-for-syntax
-  (define-operator-classes infix:
+(define-infix-parser infix:
+  #:operator-classes 
      binary    op-or         (or)
      binary    op-and        (and)
      unary     op-not        (not)
@@ -20,17 +17,16 @@
      variadic  op-inequality (< <= > >=)
      binary    op-add-sub    (+ -)
      binary    op-mul-div    (* / modulo quotient remainder // % quotient/remainder)
-     binary    op-expt       (^ expt)))
-
-(define-infix-parser infix:
-  #:operator-precedence (op-or
-                         op-and
-                         op-not
-                         op-equal
-                         op-inequality
-                         op-add-sub
-                         op-mul-div
-                         op-expt))
+     binary    op-expt       (^ expt)
+  #:precedence
+     op-or
+     op-and
+     op-not
+     op-equal
+     op-inequality
+     op-add-sub
+     op-mul-div
+     op-expt)
 
 (module+ test
   (require rackunit/chk)
