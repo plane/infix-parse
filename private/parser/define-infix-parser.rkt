@@ -38,8 +38,6 @@
 
   [(_ parser-name:id (~seq arity (literal-id:id ...+)) ...+)
    #:with (class-name ...) (generate-temporaries #'(arity ...))
-   #:with ooo (quote-syntax ...)
-   
    #'(define-infix-parser parser-name
        #:operator-classes
          (~@ arity class-name (literal-id ...)) ...
