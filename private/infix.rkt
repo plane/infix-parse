@@ -3,9 +3,7 @@
 (provide infix:)
 
 (require "define.rkt"
-         "aliases/division.rkt"
-         "aliases/expt.rkt"
-         "aliases/not-equal.rkt")
+         "aliases.rkt")
 
 (define-simple-infix-parser infix:
   binary  (or)
@@ -68,3 +66,4 @@
    (infix: 0 < 1 + 2 <= 3) #t
    (infix: 2 ^ 3 ^ 4) 2417851639229258349412352
    (infix: (2 ^ 3) ^ 4) 4096))
+
