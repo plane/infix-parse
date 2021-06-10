@@ -8,24 +8,14 @@
          "aliases/not-equal.rkt")
 
 (define-infix-parser infix:
-  #:operator-classes 
-     binary    op-or         (or)
-     binary    op-and        (and)
-     unary     op-not        (not)
-     variadic  op-equal      (eq? eqv? equal? = not-eq? not-eqv? not-equal? !=)
-     variadic  op-inequality (< <= > >=)
-     binary    op-add-sub    (+ -)
-     binary    op-mul-div    (* / modulo quotient remainder // % quotient/remainder)
-     binary    op-expt       (^ expt)
-  #:precedence
-     op-or
-     op-and
-     op-not
-     op-equal
-     op-inequality
-     op-add-sub
-     op-mul-div
-     op-expt)
+  binary    (or)
+  binary    (and)
+  unary     (not)
+  variadic  (eq? eqv? equal? = not-eq? not-eqv? not-equal? !=)
+  variadic  (< <= > >=)
+  binary    (+ -)
+  binary    (* / modulo quotient remainder // % quotient/remainder)
+  binary    (^ expt))
 
 (module+ test
   (require rackunit/chk)
