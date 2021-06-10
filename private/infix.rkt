@@ -15,7 +15,7 @@
   chained (< <= > >=)
   binary  (+ -)
   binary  (* / modulo quotient remainder // % quotient/remainder)
-  binary  (^ expt))
+  binary  (^ expt) #:associate right)
 
 (module+ test
   (require rackunit/chk)
@@ -65,4 +65,6 @@
    (infix: 0 < 2 < 2) #f
    (infix: 0 < 2 <= 2) #t
    (infix: 0 < 1 + 2 < 3) #f
-   (infix: 0 < 1 + 2 <= 3) #t))
+   (infix: 0 < 1 + 2 <= 3) #t
+   (infix: 2 ^ 3 ^ 4) 2417851639229258349412352
+   (infix: (2 ^ 3) ^ 4) 4096))

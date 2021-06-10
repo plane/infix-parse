@@ -3,17 +3,22 @@
 (provide define-operator-classes)
 
 (require syntax/parse
-         syntax/parse/define)
+         syntax/parse/define
+         (for-syntax syntax/parse/define))
 
-(require (for-syntax "operator-class-name.rkt")
-  (for-syntax racket/base                
+(require
+  (for-syntax "operator-class-name.rkt"
+              "associativity-class.rkt")
+  (for-syntax racket/base           
               syntax/parse)
   (for-template racket/base
                 (only-in racket/list rest)))
 
 (define-syntax-parser define-unary-operator-class
   #:track-literals
-  [(_ parser:id name:operator-class-name literal-id:id ...+)
+  [(_ parser:id
+      name:operator-class-name
+      (literal-id:id ...+))
    #'(begin
        (define-syntax-class name
          (pattern (~literal literal-id)) ...)
@@ -24,10 +29,24 @@
 
 (define-syntax-parser define-binary-operator-class
   #:track-literals
-  [(_ parser:id name:operator-class-name literal-id:id ...+)
+  [(_ parser:id
+      name:operator-class-name
+      (literal-id:id ...+)
+      #:associate right)
    #'(begin
-       (define-syntax-class name
-         (pattern (~literal literal-id)) ...)
+       (define-syntax-class name (pattern (~literal literal-id)) ...)
+       (define-syntax-class name.is-not (pattern (~not (~or (~literal literal-id) ...))))
+       (define-splicing-syntax-class name.expr
+         (pattern (~seq (~var lhs name.is-not) ...+ (~var op name) rhs ...+)
+           #:attr result
+             #'(... (op (parser lhs ...)
+                        (parser rhs ...))))))]
+  [(_ parser:id
+      name:operator-class-name
+      (literal-id:id ...+)
+      (~optional (~seq #:associate left)))
+   #'(begin
+       (define-syntax-class name (pattern (~literal literal-id)) ...)
        (define-splicing-syntax-class name.expr
          (pattern (~seq lhs ...+ (~var op name) rhs ...+)
            #:attr result
@@ -36,12 +55,12 @@
 
 (define-syntax-parser define-chained-operator-class
   #:track-literals
-  [(_ parser:id name:operator-class-name literal-id:id ...+)
+  [(_ parser:id
+      name:operator-class-name
+      (literal-id:id ...+))
    #'(begin
-       (define-syntax-class name
-         (pattern (~literal literal-id)) ...)
-       (define-syntax-class name.is-not
-         (pattern (~not (~or (~literal literal-id) ...))))
+       (define-syntax-class name (pattern (~literal literal-id)) ...)
+       (define-syntax-class name.is-not (pattern (~not (~or (~literal literal-id) ...))))
        (define-splicing-syntax-class name.expr
          (pattern (~seq (~var lhs name.is-not) ...+
                         (~seq (~var op name)
@@ -59,18 +78,45 @@
 (define-syntax-parser define-operator-class
   #:track-literals
   #:datum-literals (unary binary chained)
-  [(_ parser:id unary name:operator-class-name literal-id:id ...+)
-   #'(define-unary-operator-class parser name literal-id ...)]
-  
-  [(_ parser:id binary name:operator-class-name literal-id:id ...+)
-   #'(define-binary-operator-class parser name literal-id ...)]
-  
-  [(_ parser:id chained name:operator-class-name literal-id:id ...+)
-   #'(define-chained-operator-class parser name literal-id ...)])
+  [(_ parser:id
+      unary
+      name:operator-class-name
+      (literal-id:id ...+)
+      (~optional (~seq #:associate assoc-kw:associativity)))
+   #:fail-when (attribute assoc-kw) "Associativity cannot be changed on unary operators"
+   #'(define-unary-operator-class parser
+                                  name
+                                  (literal-id ...))]
+  [(_ parser:id
+      binary
+      name:operator-class-name
+      (literal-id:id ...+)
+      (~optional (~seq #:associate assoc-kw:associativity)))
+   #'(define-binary-operator-class parser
+                                   name
+                                   (literal-id ...)
+                                   (~? (~@ #:associate assoc-kw)))]
+  [(_ parser:id
+      chained
+      name:operator-class-name
+      (literal-id:id ...+)
+      (~optional (~seq #:associate assoc-kw:associativity)))
+   #:fail-when (attribute assoc-kw) "Associativity cannot be changed on chained operators"
+   #'(define-chained-operator-class parser
+                                    name
+                                    (literal-id ...))])
 
 (define-syntax-parser define-operator-classes
   #:track-literals
   #:datum-literals (unary binary chained)
-  [(_ parser:id ((~seq arity name:operator-class-name (literal-id:id ...+))) ...+)
+  [(_ parser:id
+      ((~seq arity
+             name:operator-class-name
+             (literal-id:id ...+)
+             (~optional (~seq #:associate assoc-kw:associativity)))) ...+)
    #'(begin
-       (define-operator-class parser arity name literal-id ...) ...)])
+       (define-operator-class parser
+                              arity
+                              name
+                              (literal-id ...)
+                              (~? (~@ #:associate assoc-kw))) ...)])
