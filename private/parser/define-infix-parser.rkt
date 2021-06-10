@@ -13,7 +13,7 @@
 
 (define-syntax-parser define-infix-parser
   #:track-literals
-  #:datum-literals (unary binary variadic)
+  #:datum-literals (unary binary chained)
   
   [(_ parser-name:id
       #:operator-classes 
@@ -34,7 +34,7 @@
 
 (define-syntax-parser define-simple-infix-parser
   #:track-literals
-  #:datum-literals (unary binary variadic)
+  #:datum-literals (unary binary chained)
 
   [(_ parser-name:id (~seq arity (literal-id:id ...+)) ...+)
    #:with (class-name ...) (generate-temporaries #'(arity ...))

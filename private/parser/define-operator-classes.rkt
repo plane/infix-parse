@@ -34,7 +34,7 @@
              #'(... (op (parser lhs ...)
                         (parser rhs ...))))))])
 
-(define-syntax-parser define-variadic-operator-class
+(define-syntax-parser define-chained-operator-class
   #:track-literals
   [(_ parser:id name:operator-class-name literal-id:id ...+)
    #'(begin
@@ -58,19 +58,19 @@
 
 (define-syntax-parser define-operator-class
   #:track-literals
-  #:datum-literals (unary binary variadic)
+  #:datum-literals (unary binary chained)
   [(_ parser:id unary name:operator-class-name literal-id:id ...+)
    #'(define-unary-operator-class parser name literal-id ...)]
   
   [(_ parser:id binary name:operator-class-name literal-id:id ...+)
    #'(define-binary-operator-class parser name literal-id ...)]
   
-  [(_ parser:id variadic name:operator-class-name literal-id:id ...+)
-   #'(define-variadic-operator-class parser name literal-id ...)])
+  [(_ parser:id chained name:operator-class-name literal-id:id ...+)
+   #'(define-chained-operator-class parser name literal-id ...)])
 
 (define-syntax-parser define-operator-classes
   #:track-literals
-  #:datum-literals (unary binary variadic)
+  #:datum-literals (unary binary chained)
   [(_ parser:id ((~seq arity name:operator-class-name (literal-id:id ...+))) ...+)
    #'(begin
        (define-operator-class parser arity name literal-id ...) ...)])

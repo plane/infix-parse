@@ -8,14 +8,14 @@
          "aliases/not-equal.rkt")
 
 (define-simple-infix-parser infix:
-  binary    (or)
-  binary    (and)
-  unary     (not)
-  variadic  (eq? eqv? equal? = not-eq? not-eqv? not-equal? !=)
-  variadic  (< <= > >=)
-  binary    (+ -)
-  binary    (* / modulo quotient remainder // % quotient/remainder)
-  binary    (^ expt))
+  binary  (or)
+  binary  (and)
+  unary   (not)
+  chained (eq? eqv? equal? = not-eq? not-eqv? not-equal? !=)
+  chained (< <= > >=)
+  binary  (+ -)
+  binary  (* / modulo quotient remainder // % quotient/remainder)
+  binary  (^ expt))
 
 (module+ test
   (require rackunit/chk)
