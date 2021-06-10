@@ -7,7 +7,7 @@
          "aliases/expt.rkt"
          "aliases/not-equal.rkt")
 
-(define-infix-parser infix:
+(define-simple-infix-parser infix:
   binary    (or)
   binary    (and)
   unary     (not)

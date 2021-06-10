@@ -1,7 +1,7 @@
 #lang racket/base
 
 (provide define-infix-parser
-         define-infix-parser/named)
+         define-simple-infix-parser)
 
 (require syntax/parse/define)
 
@@ -11,15 +11,15 @@
               "operator-class-name.rkt"
               "define-operator-classes.rkt"))
 
-(define-syntax-parser define-infix-parser/named
+(define-syntax-parser define-infix-parser
   #:track-literals
   #:datum-literals (unary binary variadic)
   
   [(_ parser-name:id
       #:operator-classes 
-        (arity operator-class-name:operator-class-name (literal-id:id ...+)) ...+
+        (~seq arity operator-class-name:operator-class-name (literal-id:id ...+)) ...+
       #:precedence
-        (op-class:operator-class-name ...+))
+        op-class:operator-class-name ...+)
    #:with ooo (quote-syntax ...)
    
    #'(begin
@@ -32,7 +32,7 @@
          [(_ f xs ...+)               #'(f xs ooo)]
          [(_ x)                       #'x]))])
 
-(define-syntax-parser define-infix-parser
+(define-syntax-parser define-simple-infix-parser
   #:track-literals
   #:datum-literals (unary binary variadic)
 
@@ -40,8 +40,8 @@
    #:with (class-name ...) (generate-temporaries #'(arity ...))
    #:with ooo (quote-syntax ...)
    
-   #'(define-infix-parser/named parser-name
+   #'(define-infix-parser parser-name
        #:operator-classes
-         (arity class-name (literal-id ...)) ...
+         (~@ arity class-name (literal-id ...)) ...
        #:precedence
-         (class-name ...))])
+         class-name ...)])
